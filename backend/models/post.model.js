@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-
-
 const postSchema =  new mongoose.Schema ({
     caption:{type:String, default:''},
     image:{type:String, required:true},
@@ -10,4 +8,4 @@ const postSchema =  new mongoose.Schema ({
     comments:[{type:mongoose.Schema.ObjectId, ref:'Comment'}],
 },{timestamps:true});
 
-export default Post = mongoose.model('Post', postSchema);
+export const Post = mongoose.model('Post', postSchema);

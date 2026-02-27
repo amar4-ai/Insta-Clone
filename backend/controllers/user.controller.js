@@ -2,6 +2,8 @@ import { User } from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import getDataUri from "../utils/datauri.js";
 import cloudinary from "../utils/cloudinary.js";
+import jwt from "jsonwebtoken";
+import { Post } from "../models/post.model.js";
 
 export const register = async (req, res) => {
     try {
@@ -56,7 +58,18 @@ export const login = async(req, res) =>{
                 message:"Incorrect email or password",
                 success:false
             });
-        }
+        };
+        const token = await jwt.sign({userId:user._id},process.env.SECRET_KEY,{expiresIn:'1d'});
+        //populate each post if  in the posts array
+        const populatedPosts = await Promise.all(
+            user.posts.map(async (postId)=>{
+                const post = await Post.findById(postId);
+                if(post.author.equals(user._id)){
+                    return post;
+                }
+                return null;
+            })
+        );
         user ={
             _id:user._id,
             username:user.username,
@@ -65,11 +78,10 @@ export const login = async(req, res) =>{
             bio:user.bio,
             followers:user.followers,
             following:user.following,
-            posts:user.posts,
+            posts:populatedPosts
 
         }
 
-        const token = await JsonWebTokenError.sign({userId:user._id},process.env.SECRET_KEY,{expiresIn:'1d'});
         return res.cookie('token', token, {httpOnly:true, sameSite:'strict', maxAge:1*24*60*60*1000}).json({
             message:`Welcome back ${user.username}`,
             success:true,
@@ -97,7 +109,7 @@ export const logout = async(_,res)=>{
 export const getProfile = async(req, res)=>{
     try {
         const userId = req.params.id;
-        let user = await User.findById(userId);
+        let user = await User.findById(userId).select('-password');
         return res.status(200).json({
             user,
             sucess:true
@@ -113,22 +125,22 @@ export const editProfile = async(req, res)=>{
         const {bio,gender} = req.body;
         const profilePicture = req.file;
         let cloudResponse;
-        if(!profilePicture){
+        if(profilePicture){
             const fileUri = getDataUri(profilePicture);
             cloudResponse = await cloudinary.uploader.upload(fileUri);
 
         }
 
-        const user = await User.findById(userid);
+        const user = await User.findById(userid).select('-password');
         if(!user){
             return res.status(404).json({
                 message:"User not found",
-                success:true
+                success:false
             })
         };
         if(bio) user.bio =bio;
         if(gender) user.gender=gender;
-        if(profilePicturde) user.profilePicture = cloudResponse.secure_url;
+        if(profilePicture) user.profilePicture = cloudResponse.secure_url;
 
         await user.save();
         return res.status(200).json({
@@ -145,7 +157,7 @@ export const getSuggestedUsers = async(req, res)=>{
 
     try {
         const suggestedUsers = await User.find({_id:{$ne:req.id}}).select("-password");
-        if(suggestedUsers){
+        if(!suggestedUsers){
             return res.status(400).json({
                 message:"Currently do not have any users",
             })
