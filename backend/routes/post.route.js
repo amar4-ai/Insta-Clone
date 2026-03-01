@@ -9,7 +9,7 @@ router.route("/addpost").post(isAuthenticated, upload.single('image'), addNewPos
 router.route("/all").get(isAuthenticated,getAllPost );
 router.route("/userpost/all").get(isAuthenticated, getUserPost);
 router.route("/:id/like").get(isAuthenticated, likePost);
-router.route("/:id/dislike").post(isAuthenticated, disLikePost );
+router.route("/:id/dislike").get(isAuthenticated, disLikePost );
 router.route("/:id/comment").post(isAuthenticated, addComment);
 router.route("/:id/comment/all").post(isAuthenticated, getCommentsOfPost );
 router.route("/delete/:id").delete(isAuthenticated, deletePost );

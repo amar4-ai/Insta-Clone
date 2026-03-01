@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAuthUser } from '@/redux/authSlice';
 import CreatePost from './CreatePost';
+import { setPosts, setSelectedPost } from '@/redux/postSlice';
 
 
 const LeftSidebar = () => {
@@ -15,6 +16,8 @@ const LeftSidebar = () => {
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const { user } = useSelector(store => store.auth);
+
+
     const logoutHandler = async () => {
         try {
             const res = await axios.get('http://localhost:8000/api/v1/user/logout',
@@ -22,6 +25,8 @@ const LeftSidebar = () => {
             );
             if (res.data.success) {
                 dispatch(setAuthUser(null));
+                dispatch(setSelectedPost(null));
+                dispatch(setPosts([]));
                 navigate("/login");
                 toast.success(res.data.message);
             }
@@ -37,25 +42,26 @@ const LeftSidebar = () => {
             setOpen(true);
         }
     }
-    const sidebarItems = [
-        { icon: <Home />, text: "Home" },
-        { icon: <Search />, text: "Search" },
-        { icon: <TrendingUp />, text: "Expoler" },
-        { icon: <MessageCircle />, text: "Messages" },
-        { icon: <Heart className="text-red-500 w-10 h-10" />, text: "Notifications" },
-        { icon: <PlusSquare />, text: "Create" },
-        {
-            icon: (
-                <Avatar className='h-6 w-6'>
-                    <AvatarImage
-                        src={user?.profilePicture} alt="@shadcn"
-                    />
-                    <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-            ), text: "Profile"
-        },
-        { icon: <LogOut />, text: "Logout" }
-    ]
+   
+const sidebarItems = [
+  { icon: Home, text: "Home", type: "icon" },
+  { icon: Search, text: "Search", type: "icon" },
+  { icon: TrendingUp, text: "Explore", type: "icon" },
+  { icon: MessageCircle, text: "Messages", type: "icon" },
+  { icon: Heart, text: "Notifications", type: "icon" },
+  { icon: PlusSquare, text: "Create", type: "icon" },
+  {
+    icon: (
+      <Avatar className="h-6 w-6">
+        <AvatarImage src={user?.profilePicture} />
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
+    ),
+    text: "Profile",
+    type: "avatar"
+  },
+  { icon: LogOut, text: "Logout", type: "icon" }
+];
 
     return (
 
@@ -66,9 +72,15 @@ const LeftSidebar = () => {
                 <div>
                     {
                         sidebarItems.map((item, index) => {
+                        
                             return (
                                 <div onClick={() => sidebarHandler(item.text)} key={index} className='flex items-center gap-3 relative hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-3'>
-                                    {item.icon}
+                                 
+                                     {item.type === "icon" ? (
+        <item.icon className="w-6 h-6 shrink-0" strokeWidth={2.5} />
+      ) : (
+        item.icon
+      )}
                                     <span>{item.text}</span>
                                 </div>
                             )

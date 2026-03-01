@@ -156,9 +156,10 @@ export const addComment = async (req, res) => {
             text,
             author: commenterId,
             post: postId
-        }).populate({
+        })
+            await comment.populate({
             path: 'author',
-            select: "username, profilePicture"
+            select: "username profilePicture"
         });
         post.comments.push(comment._id);
         await post.save();
@@ -175,7 +176,7 @@ export const addComment = async (req, res) => {
 export const getCommentsOfPost = async (req, re) => {
     try {
         const postId = req.params.id;
-        const comments = await Comment.find({ post: postId }).populate('author', 'username, profilePicture');
+        const comments = await Comment.find({ post: postId }).populate('author', 'username profilePicture');
 
         if (!comments) return res.status(404).json({
             message: "No comments found for this post",
