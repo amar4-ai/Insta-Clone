@@ -40,28 +40,32 @@ const LeftSidebar = () => {
             logoutHandler();
         } else if (textType == "Create") {
             setOpen(true);
+        } else if (textType == "Profile") {
+            navigate(`/profile/${user?._id}`);
+        }else if(textType == "Home"){
+            navigate("/");
         }
     }
-   
-const sidebarItems = [
-  { icon: Home, text: "Home", type: "icon" },
-  { icon: Search, text: "Search", type: "icon" },
-  { icon: TrendingUp, text: "Explore", type: "icon" },
-  { icon: MessageCircle, text: "Messages", type: "icon" },
-  { icon: Heart, text: "Notifications", type: "icon" },
-  { icon: PlusSquare, text: "Create", type: "icon" },
-  {
-    icon: (
-      <Avatar className="h-6 w-6">
-        <AvatarImage src={user?.profilePicture} />
-        <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
-    ),
-    text: "Profile",
-    type: "avatar"
-  },
-  { icon: LogOut, text: "Logout", type: "icon" }
-];
+
+    const sidebarItems = [
+        { icon: Home, text: "Home", type: "icon" },
+        { icon: Search, text: "Search", type: "icon" },
+        { icon: TrendingUp, text: "Explore", type: "icon" },
+        { icon: MessageCircle, text: "Messages", type: "icon" },
+        { icon: Heart, text: "Notifications", type: "icon" },
+        { icon: PlusSquare, text: "Create", type: "icon" },
+        {
+            icon: (
+                <Avatar className="h-6 w-6">
+                    <AvatarImage src={user?.profilePicture} />
+                    <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+            ),
+            text: "Profile",
+            type: "avatar"
+        },
+        { icon: LogOut, text: "Logout", type: "icon" }
+    ];
 
     return (
 
@@ -72,15 +76,15 @@ const sidebarItems = [
                 <div>
                     {
                         sidebarItems.map((item, index) => {
-                        
+
                             return (
                                 <div onClick={() => sidebarHandler(item.text)} key={index} className='flex items-center gap-3 relative hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-3'>
-                                 
-                                     {item.type === "icon" ? (
-        <item.icon className="w-6 h-6 shrink-0" strokeWidth={2.5} />
-      ) : (
-        item.icon
-      )}
+
+                                    {item.type === "icon" ? (
+                                        <item.icon className="w-6 h-6 shrink-0" strokeWidth={2.5} />
+                                    ) : (
+                                        item.icon
+                                    )}
                                     <span>{item.text}</span>
                                 </div>
                             )
@@ -89,7 +93,7 @@ const sidebarItems = [
 
                 </div>
             </div>
-            <CreatePost open={open} setOpen={setOpen}/>
+            <CreatePost open={open} setOpen={setOpen} />
         </div>
 
     )

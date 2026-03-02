@@ -5,6 +5,7 @@ const postSlice = createSlice({
     initialState:{
         posts:[],
         selectedPost:null,
+    
     },
     reducers:{
         //actions
