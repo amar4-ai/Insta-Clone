@@ -13,16 +13,18 @@ import { useEffect } from 'react'
 import { setSocket } from './redux/socketSlice'
 import { setOnlineUsers } from './redux/chatSlice'
 import { setLikeNotification } from './redux/rtnSlice'
+import ProtectedRoutes from './components/ProtectedRoutes'
+
 
 
 const browserRouter = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout/>,
+    element:<ProtectedRoutes><MainLayout/></ProtectedRoutes> ,
     children: [
       {
         path: "/",
-        element: <Home/>
+        element:<ProtectedRoutes> <Home/></ProtectedRoutes>
       },
       {
         path: "/profile/:id",
@@ -34,9 +36,9 @@ const browserRouter = createBrowserRouter([
       },
       {
         path:"/chat",
-        element:<ChatPage/>
+        element:<ProtectedRoutes><ChatPage/></ProtectedRoutes>
       },
-      
+
     ]
   },
   {
