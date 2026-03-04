@@ -1,3 +1,5 @@
+// 
+
 import React, { useEffect, useState } from 'react'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
@@ -16,15 +18,16 @@ const Signup = () => {
     const [loading, setLoading] = useState(false);
     const {user} = useSelector(store=>store.auth);
     const navigate = useNavigate();
+
     const changeEventHandler = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
     }
 
     const signupHandler = async (e) => {
         e.preventDefault();
-        console.log(input);
         try {
             setLoading(true);
+            toast.info("Server is waking up, please wait...");
             const res = await axios.post('https://insta-clone-5she.onrender.com/api/v1/user/register', input, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -42,23 +45,24 @@ const Signup = () => {
             }
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Something went wrong, please try again.");
         } finally {
             setLoading(false);
         }
     }
-    useEffect(()=>{
-        if(user){
+
+    useEffect(() => {
+        if (user) {
             navigate("/");
         }
-    },[]);
+    }, []);
 
     return (
         <div className='flex items-center w-screen h-screen justify-center'>
             <form onSubmit={signupHandler} className='shadow-lg flex flex-col gap-5 p-8'>
                 <div className="my-4">
                     <h1 className='text-center font-bold text-xl'>LOGO</h1>
-                    <p className='text-sm text-center'>Signup to see photos & videos from your frineds</p>
+                    <p className='text-sm text-center'>Signup to see photos & videos from your friends</p>
                 </div>
                 <div>
                     <span className="font-medium">Username</span>
@@ -92,19 +96,16 @@ const Signup = () => {
                 </div>
                 {
                     loading ? (
-                        <Button>
-                            <Loader2 className=' mr-2  h-4 w-4 animate-spin'/>
-                            Please wait
+                        <Button disabled>
+                            <Loader2 className='mr-2 h-4 w-4 animate-spin'/>
+                            Please wait...
                         </Button>
-
-                    ) :(
-
+                    ) : (
                         <Button type='submit'>Signup</Button>
                     )
                 }
-                <span className='text-center'>Already have an account ?<Link to="/login" className='text-blue-600'>Login</Link></span>
+                <span className='text-center'>Already have an account? <Link to="/login" className='text-blue-600'>Login</Link></span>
             </form>
-
         </div>
     )
 }
